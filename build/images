@@ -1,0 +1,53 @@
+set -x
+
+HOST_VPC="registry-vpc.cn-shenzhen.aliyuncs.com/philiphuang"
+HOST_INTERNET="registry.cn-shenzhen.aliyuncs.com/philiphuang"
+REGISTRY_HOST=${HOST_INTERNET}
+# REGISTRY_HOST=${HOST_VPC}
+REGISTRY_PWD="B#peQ268"
+DIRECTORY_TO_BUILD="config-injection"
+
+registry_login(){
+    # echo "${REGISTRY_PWD}" | docker login  --password-stdin --username=philipsub@gmail.com ${REGISTRY_HOST}
+    return 0
+}
+
+build(){
+    source $(pwd)/.build_config
+    docker build ${CACHE_STATUS} --build-arg REGISTRY_HOST=${HOST_INTERNET} -t ${LABEL} $1/
+}
+
+push2registry(){
+    source $1/.build_config
+    IMAGE_ID=$(docker images -q ${LABEL})
+
+    if [ -n "$IMAGE_ID" ]; then
+        # 为防止构建时间过长，登陆过期，这里重新登录一次
+        registry_login
+        remoteTag=${REGISTRY_HOST}/${LABEL}
+        docker tag ${IMAGE_ID} ${remoteTag}
+        docker push ${remoteTag}
+    else
+        echo "$1 build failed"
+    fi
+}
+
+declare CACHE_STATUS=""
+if [ "$1" = "nocache" ]; then 
+    CACHE_STATUS="--no-cache"
+fi
+
+# if [ ! $(registry_login) ]; then
+#     REGISTRY_HOST=${HOST_INTERNET}
+#     registry_login
+# fi
+
+# export到环境变量，然后在docker-compose的from标签使用
+export REGISTRY_HOST=${REGISTRY_HOST}
+
+for directory in ${DIRECTORY_TO_BUILD}; do
+    build $directory
+    # push2registry $directory
+done
+
+# find . -iname Dockerfile -exec dirname {} \;

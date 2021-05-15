@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+
+  testsuit:
+    image: philiphuang/config-injector:latest
+    volumes:
+      - ./.env:/.env
+      - ./config/mysql_init_template:/input/mysql_init
+      - ./config/mysql_init:/output/mysql_init
