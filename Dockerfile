@@ -11,3 +11,4 @@ ADD entrypoint.sh /entrypoint.sh
 VOLUME [ "/input" "/output"]
 
 ENTRYPOINT [ "/entrypoint.sh" ]
+CMD ["/bin/sh", "-c", "@_"]
