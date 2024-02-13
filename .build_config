@@ -1,1 +1,7 @@
 LABEL="philiphuang/config-injector:latest"
+push_registry=docker.io
+# push_username=philiphuang
+# push_password=
+# pull_registry=registry.cn-shenzhen.aliyuncs.com
+# pull_username=philipsub@gmail.com
+# pull_password=B#peQ268

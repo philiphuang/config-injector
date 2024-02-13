@@ -23,18 +23,21 @@ read_dir(){
         then
             read_dir "${file}" 
         else
-            inject_file "${file}"
+            inject_config "${file}"
         fi
     done
 }
 
-inject_file(){
-    # ${VAR#*STR} 这是BASH替换字符串的语法，搜索bash 字符串截取
-    # dest_file=${output_dir}"/"${1#*$(echo $input_dir)}
+inject_config(){
+    # 找出当前路径位于input目录下的差距
     relative_path=${1#"$input_dir"}
+    # 构建output路径下的全路径
     dest_file=${output_dir}$relative_path
+    # 确保目录存在
     mkdir -p "$(dirname $dest_file)"
+    # 用cp -a保证目标文件和源文件属性一致
     cp -a "$1" "${dest_file}"
+    # 替换目标文件的内容
     envsubst < "$1" > "${dest_file}"; 
 }
 
